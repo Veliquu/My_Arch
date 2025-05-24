@@ -67,5 +67,9 @@ To connect to a network (replace SSID with the networks name):
 ```
 [iwd]# station wlan0 connect SSID
 ```
+Finally exit with: 
+```
+[iwd]# exit
+```
 </details>
 
