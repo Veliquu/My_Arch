@@ -168,3 +168,35 @@ The partition table has been altered.
 Calling ioctl() to re-read partition table.
 Syncing disks.
 ```
+
+# Format the partitions
+Once the partitions have been created, each newly created partition must be formatted with an appropriate file system.  
+You can see the partitions with `fdsik -l`. 
+I will be creating **Ext4** file system so to format that I run: 
+```
+# mkfs.ext4 /dev/nvme0n1p3
+```
+If you created a partition for swap, initialize it with **mkswap**:
+```
+# mkswap /dev/nvme0n1p2
+```
+And for the boot I created EFI system partition, format it to FAT32 using mkfs.fat.
+```
+# mkfs.fat -F 32 /dev/nvme0n1p1
+````
+
+# Moun the file systems
+Mount root volume to `/mnt`
+```
+# mount /dev/nvme0n1p3 /mnt
+```
+For UEFI systems, mount the EFI system partition:
+```
+# mount --mkdir /dev/nvme0n1p1 /mnt/boot
+```
+If you created a swap volume, enable it with swapon:
+```
+# swapon /dev/nvme0n1p2
+```
+
+# [Installation]()
