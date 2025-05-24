@@ -54,5 +54,18 @@ If the device or its adapter is turned off, turn it on:
 [iwd]# adapter adapter set-property Powered on
 ```
 
+Onward I will use my device name `wlan0` change it to what your device name is.
+To initiate scan for networks (command will not output anything):
+```
+[iwd]# station wlan0 scan
+```
+Then to list available networks: 
+```
+[iwd]# station wlan0 get-networks
+```
+To connect to a network (replace SSID with the networks name):
+```
+[iwd]# station wlan0 connect SSID
+```
 </details>
 
