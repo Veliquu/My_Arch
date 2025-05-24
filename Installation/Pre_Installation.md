@@ -54,7 +54,7 @@ If the device or its adapter is turned off, turn it on:
 [iwd]# adapter adapter set-property Powered on
 ```
 
-Onward I will use my device name `wlan0` change it to what your device name is.
+Onward I will use my device name `wlan0` change it to what your device name is.  
 To initiate scan for networks (command will not output anything):
 ```
 [iwd]# station wlan0 scan
@@ -72,4 +72,26 @@ Finally exit with:
 [iwd]# exit
 ```
 </details>
+
+To verify you are connected, ping:
+```
+# ping archlinux.org
+```
+
+# Update the system clock
+When you have internet connection **systemd-timesyncd** will automaticvally sync default time.  
+Use **timedatectl** to ensure the system clock is synchronized: 
+```
+# timedatectl
+```
+In my case my time zone was wrong and needed to change it to Europe/Helsinki. You can set the time zone:
+```
+# timedatectl set-timezone Europe/Helsinki
+```
+You can also manually set your time:
+```
+# timedatectl set-time "yyyy-MM-dd hh:mm:ss"
+```
+
+
 
