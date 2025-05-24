@@ -93,5 +93,78 @@ You can also manually set your time:
 # timedatectl set-time "yyyy-MM-dd hh:mm:ss"
 ```
 
+# Partition the disks
+When recognized by the live system, disks are assigned to a **block device** such as `/dev/sda`, `/dev/nvme0n1` or `/dev/mmcblk0`. To identify these devices, use lsblk or fdisk.
+```
+# fdisk -l
+```
+For example this is what mine shows:  
+![Image](https://github.com/user-attachments/assets/70b48c7b-8488-478c-bbec-d3082d04b70e)  
+Here we can see USB where I booted `/dev/sda1` and my PCs SSD `/dev/nvme0n1`.
 
+When partitioning your disk, you will need atleast two partitions root `/` and boot `/boot`. In this example I will also make 3rd partition for `SWAP`.  
+To start the partitioning use (change /dev/nvme0n1 to your disk):
+```
+# fdisk /dev/nvme0n1
+```
+When you are in fdisk the command line would look like this:
+```
+Command (m for help):
+```
+Using `p` for the command you can check the disk and with `g` you can delete all partitions if you have any.  
+To create new partition use `n` command.  
+For the first partition (/boot) you can use default values for the first 2 options (just press ENTER) and set the last one to 1G.
+```
+Partition number (1-128, default 1): 1
+First sector (2048-1953525134, default 2048):
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-1953525134, default 1953523711): +1G
+```
+If the partition have vfat signature just remove it.
+```
+Partition #1 contains a vfat signature.
 
+Do you want to remove the signature? [Y]es/[N]o: Y
+The signature will be removed by a write command.
+```
+Mark the partition as an EFI system partition:
+```
+Command (m for help): t
+Selected partition 1
+Partition type or alias (type L to list all): 1
+Changed type of partition 'Linux filesystem' to 'EFI System'.
+```
+Next I create the `SWAP` partition. I will make 16G `SWAP` partition since I have 2TB ssd.
+```
+Command (m for help): n
+Partition number (2-128, default 2): 
+First sector (2099200-1953525134, default 2099200): 
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2099200-1953525134, default 1953523711): +16G
+```
+Mark the partition as an Linux Swap partition, setting the partition type as **19**:
+```
+Command (m for help): t
+Partition number (1,2, default 2): 2
+Partition type or alias (type L to list all): 19
+```
+Lastly we create the root partition.
+```
+Command (m for help): n
+Partition number (3-128, default 3): 3
+First sector (10487808-1953525134, default 10487808):
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (10487808-1953525134, default 1953523711):
+```
+You can just press enter to all the sectors since we are yousing rest of the disk for this partition.  
+Mark the partition as an Linux Root (x86-64) partition, setting the partition type as **23**:
+```
+Command (m for help): t
+Partition number (1,2, default 2): 3
+Partition type or alias (type L to list all): 23
+```
+  
+To save the partition layout use command `w`.
+```
+Command (m for help): w
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Syncing disks.
+```
