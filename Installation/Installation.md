@@ -309,8 +309,25 @@ Generate the locale files:
 ```
 # locale-gen
 ```
+This creates the actual locale files based on your selections in `/etc/locale.gen`.  
 
-This creates the actual locale files based on your selections in `/etc/locale.gen`.
+  
+### Set keyboard layout
+You can list available keyboard layouts with:
+```
+localectl list-keymaps
+```
+To set up keyboard layout you can use this:
+```
+# Set keyboard layout permanently
+sudo localectl set-keymap de-latin1
+
+# Set with additional options
+sudo localectl set-keymap --no-convert de-latin1
+
+# View current settings
+localectl status
+```
 
 ### Set System Locale
 Create the locale configuration file:
