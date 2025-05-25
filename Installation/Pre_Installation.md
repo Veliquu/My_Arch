@@ -368,7 +368,7 @@ For UEFI systems, mount the EFI system partition:
 # mount --mkdir /dev/nvme0n1p1 /mnt/boot/efi
 ```
 
-The `--mkdir` flag creates the `/mnt/boot` directory automatically.
+The `--mkdir` flag creates the `/mnt/boot/efi` directory automatically. We will need this later when we are setting up **GRUB**.
 
 ## Enable Swap (if created)
 If you created a swap volume, enable it with swapon:
