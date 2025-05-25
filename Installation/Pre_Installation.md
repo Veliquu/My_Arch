@@ -2,6 +2,49 @@
 
 This guide walks you through preparing your system for Arch Linux installation, from creating bootable media to setting up partitions and mounting filesystems.
 
+## Table of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [ISO Image and Bootable USB](#iso-image-and-bootable-usb)
+   - [Download the ISO](#download-the-iso)
+   - [Create Bootable USB](#create-bootable-usb)
+   - [BIOS/UEFI Settings - Disable Secure Boot](#biosuefi-settings---disable-secure-boot)
+   - [Boot from USB](#boot-from-usb)
+3. [Set the Console Keyboard Layout](#set-the-console-keyboard-layout)
+   - [List Available Layouts](#list-available-layouts)
+   - [Set Your Keyboard Layout](#set-your-keyboard-layout)
+4. [Connect to the Internet](#connect-to-the-internet)
+   - [Check Network Interface](#check-network-interface)
+   - [Wireless Setup](#wireless-setup)
+   - [Connection Methods](#connection-methods)
+   - [Connect with iwctl](#connect-with-iwctl)
+   - [Verify Connection](#verify-connection)
+5. [Update the System Clock](#update-the-system-clock)
+   - [Verify System Clock](#verify-system-clock)
+   - [Set Timezone](#set-timezone-if-needed)
+   - [Manual Time Setting](#manual-time-setting-if-necessary)
+6. [Partition the Disks](#partition-the-disks)
+   - [Identify Storage Devices](#identify-storage-devices)
+   - [Partition Requirements](#partition-requirements)
+   - [Start Partitioning Process](#start-partitioning-process)
+   - [Step-by-Step Partition Creation](#step-by-step-partition-creation)
+7. [Format the Partitions](#format-the-partitions)
+   - [Check Created Partitions](#check-created-partitions)
+   - [Format Root Partition](#format-root-partition-ext4)
+   - [Format EFI Boot Partition](#format-efi-boot-partition-fat32)
+   - [Initialize Swap Partition](#initialize-swap-partition-if-created)
+8. [Mount the File Systems](#mount-the-file-systems)
+   - [Mount Root Partition](#mount-root-partition)
+   - [Mount EFI Boot Partition](#mount-efi-boot-partition)
+   - [Enable Swap](#enable-swap-if-created)
+   - [Verify Mounts](#verify-mounts)
+9. [Pre-Installation Verification Checklist](#pre-installation-verification-checklist)
+   - [Troubleshooting Common Issues](#troubleshooting-common-issues)
+10. [Understanding Command Parameters](#understanding-command-parameters)
+11. [Next Steps](#next-steps-installation)
+
+---
+
 ## Prerequisites
 
 Before starting, ensure you have:
@@ -9,6 +52,7 @@ Before starting, ensure you have:
 - Stable internet connection
 - Basic command-line familiarity
 - Your computer's boot menu key (commonly **F12**, F2, F8, or DEL)
+- **BIOS/UEFI access** (usually F2, F12, DEL, or ESC during boot)
 
 ---
 
@@ -33,6 +77,60 @@ Next create bootable USB with [Rufus](https://rufus.ie/en/) or [Balena Etcher](h
 3. Select the Arch Linux ISO file
 4. Select your USB drive
 5. Click "Flash!" and wait for completion
+
+## BIOS/UEFI Settings - Disable Secure Boot
+
+Before booting from your USB, you need to access your computer's BIOS/UEFI settings and disable Secure Boot. This is **crucial** for installing Arch Linux.
+
+### Why Disable Secure Boot?
+
+**Secure Boot** is a security feature that only allows digitally signed operating systems to boot. While this protects against malware, it presents challenges for Linux installations:
+
+- **Unsigned Bootloaders**: Many Linux distributions, including Arch Linux, use bootloaders that aren't signed by Microsoft
+- **Custom Kernels**: Arch Linux allows custom kernel compilation, which Secure Boot would block
+- **Installation Process**: The Arch Linux installation media itself may not be Secure Boot compatible
+- **Flexibility**: Disabling Secure Boot gives you full control over what can boot on your system
+
+**Note**: You can re-enable Secure Boot later after installation if you configure signed bootloaders, but for simplicity, we'll keep it disabled.
+
+### How to Access BIOS/UEFI Settings
+
+1. **Power on** your computer
+2. **Immediately press** the BIOS key repeatedly during startup (before Windows/OS loads)
+   - **Common BIOS keys**: F2, F12, DEL, ESC, F1, F10
+   - **Manufacturer-specific**:
+     - **ASUS**: F2 or DEL
+     - **HP**: F10 or ESC
+     - **Dell**: F2 or F12
+     - **Lenovo**: F1, F2, or Fn+F2
+     - **Acer**: F2 or DEL
+     - **MSI**: DEL or F2
+
+### Disable Secure Boot Steps
+
+1. **Navigate to Security tab** (or similar - varies by manufacturer)
+2. **Find "Secure Boot"** option (may be under "Boot Options" or "Authentication")
+3. **Change from "Enabled" to "Disabled"**
+4. **Save changes** (usually F10 or look for "Save & Exit")
+5. **Exit BIOS** and restart
+
+### Additional BIOS Settings to Check
+
+While you're in BIOS, also verify these settings:
+
+- **Boot Mode**: Set to "UEFI" (not Legacy/CSM) for modern installations
+- **Fast Boot**: Disable (can interfere with USB booting)
+- **USB Boot**: Enable (allow booting from USB devices)
+- **Boot Priority**: USB should be higher priority than hard drives
+
+### Troubleshooting BIOS Access
+
+If you can't access BIOS:
+- **Try different keys** during startup
+- **Hold the key** instead of pressing repeatedly
+- **Power off completely** then try again (not just restart)
+- **Check manual** for your specific motherboard/laptop model
+- **Use Windows**: Shift+Restart → Troubleshoot → Advanced → UEFI Firmware Settings
 
 ## Boot from USB
 Boot from your PC from the USB you created. In most cases when powering on your PC press **F12** until you get to the boot menu. After you boot from your USB you will see screen similar to this:
@@ -159,7 +257,7 @@ To verify you are connected, ping:
 # ping archlinux.org
 ```
 
-If you get replies, your internet connection is working properly.
+If you get replies, your internet connection is working properly. To stop press `ctrl + c`.
 
 ---
 
@@ -416,7 +514,43 @@ Before proceeding to the actual installation, verify that all steps are complete
 - Check that device names match your actual partitions
 - Verify no existing mounts conflict with `umount` if needed
 
+---
+
+# Understanding Command Parameters
+
+Throughout this guide, you'll notice commands that use dashes (hyphens) as parameters. Here's what they mean:
+
+## Single Dash (-) Parameters
+Single dashes are used for **short options** (single letter flags):
+
+- `fdisk -l` → The `-l` flag means "list" (shows partition tables)
+- `mkfs.fat -F 32` → The `-F` flag specifies FAT type (32-bit FAT)
+
+## Double Dash (--) Parameters  
+Double dashes are used for **long options** (full word flags):
+
+- `mount --mkdir` → The `--mkdir` flag creates directories if they don't exist
+- `ping --count 4` → The `--count` flag specifies number of ping packets
+
+## Parameter Examples from This Guide
+
+**Formatting commands:**
+- `-F 32` in `mkfs.fat -F 32` specifies FAT32 filesystem type
+- `-l` in `fdisk -l` lists all partition tables on the system
+
+**Mount command:**
+- `--mkdir` in `mount --mkdir` automatically creates the mount point directory if it doesn't exist
+
+**Time commands:**
+- Parameters like `set-timezone` and `set-time` are subcommands, not dash parameters
+
+## Why Use Dashes?
+- **Short options** (`-l`, `-F`) are quick to type for common operations
+- **Long options** (`--mkdir`, `--help`) are more readable and self-documenting
+- Many commands support both formats: `-h` and `--help` often do the same thing
+
+**Pro tip:** Most commands support `--help` or `-h` to show available parameters and their meanings.
 
 ---
 
-# Next Steps: [Installation](https://github.com/Veliquu/My_Arch/blob/main/Installation/Installation.md) 
+# Next Steps: [Installation](https://github.com/Veliquu/My_Arch/blob/main/Installation/Installation.md)
