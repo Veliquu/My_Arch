@@ -204,14 +204,14 @@ Example:
 When recognized by the live system, disks are assigned to a **block device** such as `/dev/sda`, `/dev/nvme0n1` or `/dev/mmcblk0`.
 
 ## Identify Storage Devices
-To identify these devices, use lsblk or fdisk:
+To identify these devices, use `lsblk` or `fdisk`:
 ```
-# fdisk -l
+# lsblk
 ```
 
 For example this is what mine shows:
 
-![Disk Layout](https://github.com/user-attachments/assets/70b48c7b-8488-478c-bbec-d3082d04b70e)
+![Image](https://github.com/user-attachments/assets/b6ec11e0-2ef7-43eb-8512-25083ba7eb32)
 
 Here we can see USB where I booted `/dev/sda1` and my PC's SSD `/dev/nvme0n1`.
 
