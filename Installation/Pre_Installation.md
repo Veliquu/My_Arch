@@ -382,7 +382,7 @@ Check that everything is mounted correctly:
 # lsblk
 ```
 
-You should see your partitions mounted at `/mnt` and `/mnt/boot`, with swap showing as `[SWAP]`.
+You should see your partitions mounted at `/mnt` and `/mnt/boot/efi`, with swap showing as `[SWAP]`.
 
 ---
 
