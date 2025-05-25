@@ -2,6 +2,64 @@
 
 This guide covers the complete Arch Linux installation process after you've completed the pre-installation setup (partitioning, formatting, and mounting filesystems).
 
+## Table of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [Preparing Arch Installation Environment](#preparing-arch-installation-environment)
+   - [Install Base System](#install-base-system)
+   - [Generate fstab File](#generate-fstab-file)
+   - [Enter chroot Environment](#enter-chroot-environment)
+3. [User Accounts](#user-accounts)
+   - [Set Root Password](#set-root-password)
+   - [Create User Account](#create-user-account)
+   - [Set User Password](#set-user-password)
+4. [Installing Basic Packages](#installing-basic-packages)
+   - [Essential System Packages](#essential-system-packages)
+   - [Install CPU Microcode](#install-cpu-microcode)
+   - [Enable Essential Services](#enable-essential-services)
+5. [Kernel and Firmware](#kernel-and-firmware)
+   - [Install Linux Kernels](#install-linux-kernels)
+   - [Install Firmware](#install-firmware)
+6. [GPU Drivers](#gpu-drivers)
+   - [Identify Your GPU](#identify-your-gpu)
+   - [Install GPU Drivers](#install-gpu-drivers)
+7. [System Configuration](#system-configuration)
+   - [Generate Kernel Ramdisks](#generate-kernel-ramdisks)
+   - [Configure System Locale](#configure-system-locale)
+   - [Configure Sudo Access](#configure-sudo-access)
+8. [Setting up GRUB Bootloader](#setting-up-grub-bootloader)
+   - [Install GRUB to EFI](#install-grub-to-efi)
+   - [Copy Locale Files for GRUB](#copy-locale-files-for-grub)
+   - [Generate GRUB Configuration](#generate-grub-configuration)
+9. [Final System Setup](#final-system-setup)
+   - [Set Hostname](#set-hostname)
+   - [Configure Hosts File](#configure-hosts-file)
+   - [Set Timezone](#set-timezone)
+   - [Generate Hardware Clock](#generate-hardware-clock)
+10. [Wrapping Up](#wrapping-up)
+    - [Exit chroot Environment](#exit-chroot-environment)
+    - [Unmount Partitions](#unmount-partitions)
+    - [Reboot System](#reboot-system)
+    - [First Boot](#first-boot)
+11. [Post-Installation Checklist](#post-installation-checklist)
+    - [Next Steps](#next-steps)
+    - [Troubleshooting Common Issues](#troubleshooting-common-issues)
+12. [Understanding Command Parameters](#understanding-command-parameters)
+
+---
+
+## Prerequisites
+
+Before starting this installation guide, ensure you have completed:
+- **Pre-installation setup** (partitioning, formatting, mounting)
+- **Internet connection** is active and working
+- **System clock** is synchronized
+- **Root partition** mounted at `/mnt`
+- **EFI partition** mounted at `/mnt/boot/efi`
+- **Basic familiarity** with command-line interface
+
+**Required knowledge:** Understanding of Linux file systems, partitioning concepts, and basic terminal commands.
+
 ---
 
 # Preparing Arch Installation Environment
@@ -87,6 +145,7 @@ Replace `username` with the actual username you created.
 
 # Installing Basic Packages
 
+## Essential System Packages
 Install essential packages needed for a functional system:
 ```
 # pacman -S base-devel dosfstools grub efibootmgr micro networkmanager openssh os-prober sudo
@@ -115,6 +174,8 @@ Install microcode updates for hardware bug fixes and security patches:
 ```
 # pacman -S amd-ucode
 ```
+
+**What is microcode?** Microcode provides hardware-level bug fixes and security patches directly from CPU manufacturers. It's loaded during boot to update CPU behavior.
 
 ## Enable Essential Services
 
@@ -151,7 +212,10 @@ Install the Linux kernel(s). Having multiple kernels provides backup options:
 - `linux-lts` - Long Term Support kernel (more stable, older version)
 - `linux-lts-headers` - Header files for LTS kernel
 
-Having both kernels means if one fails to boot, you can use the other as backup.
+**Why install both kernels?**
+- **Main kernel** - Latest features and hardware support
+- **LTS kernel** - More stable, tested longer, good for servers
+- **Backup option** - If one kernel fails, you can boot the other
 
 ## Install Firmware
 Install firmware files for hardware devices:
@@ -159,7 +223,7 @@ Install firmware files for hardware devices:
 # pacman -S linux-firmware
 ```
 
-This package contains firmware files for various hardware components like WiFi cards, graphics cards, and other devices.
+This package contains firmware files for various hardware components like WiFi cards, graphics cards, and other devices that require proprietary firmware to function.
 
 ---
 
@@ -200,6 +264,8 @@ If you installed the LTS kernel, also install:
 
 This ensures NVIDIA drivers work with the LTS kernel.
 
+**Important:** NVIDIA drivers are kernel-specific, so you need different packages for different kernels.
+
 ---
 
 # System Configuration
@@ -231,7 +297,14 @@ en_US.UTF-8 UTF-8
 
 Or uncomment your preferred language/locale. Save and exit the editor.
 
-## Generate Locales
+**Common locales:**
+- `en_US.UTF-8 UTF-8` - US English
+- `en_GB.UTF-8 UTF-8` - UK English
+- `de_DE.UTF-8 UTF-8` - German
+- `fr_FR.UTF-8 UTF-8` - French
+- `es_ES.UTF-8 UTF-8` - Spanish
+
+### Generate Locales
 Generate the locale files:
 ```
 # locale-gen
@@ -239,7 +312,7 @@ Generate the locale files:
 
 This creates the actual locale files based on your selections in `/etc/locale.gen`.
 
-## Set System Locale
+### Set System Locale
 Create the locale configuration file:
 ```
 # echo "LANG=en_US.UTF-8" > /etc/locale.conf
@@ -257,6 +330,8 @@ Find and uncomment this line:
 ```
 
 This allows members of the wheel group to execute any command with sudo.
+
+**Security note:** Only users you trust should be in the wheel group, as they gain administrative privileges.
 
 ---
 
@@ -305,6 +380,12 @@ Give your system a name:
 
 Replace `your-hostname` with your desired computer name.
 
+**Hostname guidelines:**
+- Use lowercase letters, numbers, and hyphens only
+- Don't start or end with hyphens
+- Keep it short and descriptive
+- Examples: `arch-desktop`, `my-laptop`, `server01`
+
 ## Configure Hosts File
 ```
 # micro /etc/hosts
@@ -317,6 +398,8 @@ Add these lines:
 127.0.1.1    your-hostname.localdomain your-hostname
 ```
 
+The hosts file maps hostnames to IP addresses for local resolution.
+
 ## Set Timezone
 ```
 # ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
@@ -326,6 +409,14 @@ Example:
 ```
 # ln -sf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
 ```
+
+**Common timezone examples:**
+- `America/New_York` - US Eastern
+- `America/Los_Angeles` - US Pacific
+- `Europe/London` - UK
+- `Europe/Berlin` - Germany
+- `Asia/Tokyo` - Japan
+- `Australia/Sydney` - Australia
 
 ## Generate Hardware Clock
 ```
@@ -379,6 +470,8 @@ After first boot, verify these work correctly:
 - [ ] **Sudo access** - Test `sudo` commands work
 - [ ] **System updates** - Run `sudo pacman -Syu`
 - [ ] **Graphics** - Verify display works correctly
+- [ ] **Audio** - Test sound output (if applicable)
+- [ ] **Time/Date** - Verify correct timezone and time
 
 ## Next Steps
 
@@ -396,17 +489,75 @@ Your base Arch Linux system is now installed and ready. You can now:
 - If system won't boot, use the LTS kernel option in GRUB
 - Check UEFI boot order in BIOS settings
 - Verify GRUB was installed correctly
+- Ensure Secure Boot is still disabled
 
 ### Network Issues
 - Ensure NetworkManager is enabled: `sudo systemctl status NetworkManager`
 - For WiFi issues, try: `sudo systemctl restart NetworkManager`
+- Check network interface status: `ip link`
 
 ### Graphics Issues
 - Verify correct GPU drivers are installed
 - Check Xorg logs: `journalctl -u display-manager`
+- For NVIDIA issues, verify nvidia modules are loaded: `lsmod | grep nvidia`
 
 ### Permission Issues
 - Verify user is in correct groups: `groups username`
 - Check sudo configuration: `sudo visudo`
+- Ensure wheel group has sudo access
+
+### Package Issues
+- Update package database: `sudo pacman -Sy`
+- Clear package cache if needed: `sudo pacman -Sc`
+- Check for corrupted packages: `sudo pacman -Qkk`
+
+---
+
+# Understanding Command Parameters
+
+This installation guide uses many commands with various parameters. Here's what the common ones mean:
+
+## Single Dash (-) Parameters
+Single dashes are used for **short options** (single letter flags):
+
+- `pacstrap -i` → The `-i` flag enables interactive mode (prompts before installing)
+- `genfstab -U -p` → `-U` uses UUIDs, `-p` excludes pseudofs mounts
+- `useradd -m -g -G` → `-m` creates home directory, `-g` sets primary group, `-G` sets supplementary groups
+- `mkinitcpio -p` → The `-p` flag uses preset configuration
+- `grub-mkconfig -o` → The `-o` flag specifies output file
+- `umount -a` → The `-a` flag unmounts all filesystems
+
+## Double Dash (--) Parameters  
+Double dashes are used for **long options** (full word flags):
+
+- `grub-install --target=x86_64-efi` → Specifies installation target architecture
+- `grub-install --bootloader-id=grub_uefi` → Sets bootloader identifier
+- `grub-install --recheck` → Forces device map checking
+- `hwclock --systohc` → Sets hardware clock from system clock
+- `ln -sf` → `-s` creates symbolic link, `-f` forces overwrite
+
+## Parameter Examples from This Guide
+
+**Package management:**
+- `pacman -S` → Install packages (`-S` means sync/install)
+- `pacman -Syu` → Update system (`-y` refreshes database, `-u` upgrades)
+
+**Service management:**
+- `systemctl enable` → Enable service to start at boot
+- `systemctl status` → Check service status
+
+**File operations:**
+- `>>` → Append output to file (not overwrite)
+- `>` → Redirect output to file (overwrites existing)
+
+## Why Use Parameters?
+- **Efficiency** - Modify command behavior without separate commands
+- **Precision** - Specify exactly what you want the command to do
+- **Safety** - Some parameters add confirmation prompts or safety checks
+- **Flexibility** - Same command can perform different operations based on parameters
+
+**Pro tip:** Most commands support `--help` or `-h` to show available parameters and their meanings.
+
+---
 
 Congratulations! You now have a fully functional Arch Linux system ready for customization and daily use.
