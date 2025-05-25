@@ -39,7 +39,7 @@ Run hwclock to generate /etc/adjtime:
 ```
 
 Next we set localization settings: system language and keyboard layout for the new system.  
-Edit /etc/locale.gen and uncomment en_US.UTF-8 UTF-8 and other needed UTF-8 locales. In my case I needed to install text editor and I went whitr micro.
+Edit /etc/locale.gen and uncomment `en_US.UTF-8 UTF-8` and other needed `UTF-8` locales. In my case I needed to install text editor and I went whitr micro.
 ```
 pacman -S micro
 
@@ -67,7 +67,7 @@ Now you can install some tools you may need.
 I will be installing
 - network manager for wireless network. (networkmanager)
 - poreviously installed console text editor. In my case it was **micro** but there are other choises like **nano** and **vim**.
-- As I have intel system I will install intel-ucode but if you have adm system you should install amd-ucode. These are for hardware bug and security fixes.
+- As I have intel system I will install **intel-ucode** but if you have adm system you should install **amd-ucode**. These are for hardware bug and security fixes.
 - packages for accessing documentation in man and info pages: man-db, man-pages and texinfo.
 - Choose and install a Linux-capable boot loader. In this guide I will go with GRUB
 
