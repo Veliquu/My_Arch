@@ -365,7 +365,7 @@ Mount root volume to `/mnt`:
 ## Mount EFI Boot Partition
 For UEFI systems, mount the EFI system partition:
 ```
-# mount --mkdir /dev/nvme0n1p1 /mnt/boot
+# mount --mkdir /dev/nvme0n1p1 /mnt/boot/efi
 ```
 
 The `--mkdir` flag creates the `/mnt/boot` directory automatically.
