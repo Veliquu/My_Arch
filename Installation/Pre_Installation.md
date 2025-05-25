@@ -419,4 +419,4 @@ Before proceeding to the actual installation, verify that all steps are complete
 
 ---
 
-# Next Steps: [Installation]()
+# Next Steps: [Installation](https://github.com/Veliquu/My_Arch/blob/main/Installation/Installation.md) 
