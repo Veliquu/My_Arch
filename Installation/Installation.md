@@ -236,7 +236,9 @@ First, identify what kind of GPU you have:
 ```
 
 Example output:
-![GPU Information](https://github.com/user-attachments/assets/15f1cafa-9b1c-4f2c-b7a4-6f7cceb40034)
+```
+00:02.0 VGA compatible controller: Intel Corporation Meteor Lake-P [Intel Graphics] (rev 08)
+```
 
 ## Install GPU Drivers
 
