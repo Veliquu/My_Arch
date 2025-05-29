@@ -258,3 +258,4 @@ $ sudo pacman -Syu
 # If using Paru for AUR packages
 $ paru -Syu
 ```
+Still in progress. Next I will keep building up my **Qtile** enviroment.
