@@ -315,20 +315,9 @@ This creates the actual locale files based on your selections in `/etc/locale.ge
 
   
 ### Set keyboard layout
-You can list available keyboard layouts with:
+If you set the console keyboard layout, make the changes persistent in vconsole.conf:
 ```
-localectl list-keymaps
-```
-To set up keyboard layout you can use this:
-```
-# Set keyboard layout permanently
-sudo localectl set-keymap de-latin1
-
-# Set with additional options
-sudo localectl set-keymap --no-convert de-latin1
-
-# View current settings
-localectl status
+# echo "KEYMAP=fi" > /etc/vconsole.conf
 ```
 
 ### Set System Locale
